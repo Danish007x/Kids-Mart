@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidsMart - Admin Dashboard | Products & Orders</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-pink: #f8b5c3;
+            --primary-blue: #9ec5cb;
+            --dark-navy: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            padding: 30px 25px;
+            background: linear-gradient(135deg, var(--primary-pink), var(--primary-blue));
+            color: white;
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .sidebar-header small {
+            opacity: 0.9;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #333;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: rgba(248, 181, 195, 0.2);
+            color: var(--primary-pink);
+            border-left: 4px solid var(--primary-pink);
+        }
+        
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+        }
+        
+        .top-navbar {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-info h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .stat-info .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--dark-navy);
+        }
+        
+        .stat-icon {
+            font-size: 40px;
+            color: var(--primary-pink);
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-pink), var(--primary-blue));
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline-pink {
+            background: transparent;
+            border: 1px solid var(--primary-pink);
+            color: var(--dark-navy);
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        
+        .btn-outline-pink:hover {
+            background: var(--primary-pink);
+            color: white;
+        }
+        
+        .refresh-btn {
+            background: var(--primary-blue);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .user-table th, .user-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .user-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .badge-new {
+            background: #4caf50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-left: 8px;
+        }
+        
+        .auto-refresh {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 12px;
+            z-index: 1000;
+        }
+        
+        .modal-custom .modal-content {
+            border-radius: 20px;
+            border: none;
+        }
+        
+        .form-label {
+            font-weight: 500;
+        }
+        
+        .order-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .status-pending { background: #ffeeba; color: #856404; }
+        .status-shipped { background: #d1ecf1; color: #0c5460; }
+        .status-delivered { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 0; display: none; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h3>Kids Mart</h3>
+                <small>Admin Dashboard</small>
+            </div>
+            <div class="sidebar-menu">
+                <a class="menu-item active" data-section="dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                <a class="menu-item" data-section="users"><i class="bi bi-people"></i> Registered Users <span id="userBadge" class="badge-new" style="display:none;">New</span></a>
+                <a class="menu-item" data-section="products"><i class="bi bi-box"></i> Products</a>
+                <a class="menu-item" data-section="orders"><i class="bi bi-cart"></i> Orders</a>
+                <hr>
+                <a class="menu-item" id="logoutBtn"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="top-navbar">
+                <div><h2 id="sectionTitle">Dashboard</h2><p id="sectionDesc" class="text-muted">Welcome back, Admin!</p></div>
+                <div style="width:45px;height:45px;border-radius:50%;background:linear-gradient(135deg,var(--primary-pink),var(--primary-blue));display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;cursor:pointer;" onclick="showAdminInfo()">A</div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div id="dashboardSection"><div class="stats-grid" id="statsGrid"></div><div class="table-container"><div class="table-header"><h4><i class="bi bi-clock-history"></i> Recent Registrations</h4><button class="refresh-btn" onclick="loadUsers(false)"><i class="bi bi-arrow-repeat"></i> Refresh</button></div><div style="overflow-x:auto;"><table class="user-table"><thead><tr><th>Name</th><th>Email</th><th>Registered Date</th><th>User ID</th></tr></thead><tbody id="recentUsersTable"><tr><td colspan="4" class="text-center">Loading...</td></tr></tbody></table></div></div></div>
+
+            <!-- Users Section -->
+            <div id="usersSection" style="display:none;"><div class="table-container"><div class="table-header"><h4><i class="bi bi-people-fill"></i> All Registered Users</h4><div><span id="userCount" class="badge bg-info me-2">0 users</span><button class="refresh-btn" onclick="loadUsers(true)"><i class="bi bi-arrow-repeat"></i> Refresh</button></div></div><div style="overflow-x:auto;"><table class="user-table"><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Registered Date</th><th>User ID</th></tr></thead><tbody id="usersTableBody"><tr><td colspan="5" class="text-center">Loading...</td></tr></tbody></table></div></div></div>
+
+            <!-- Products Section with Add Product API & List -->
+            <div id="productsSection" style="display:none;"><div class="table-container"><div class="table-header"><h4><i class="bi bi-box-seam"></i> Products Management</h4><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal"><i class="bi bi-plus"></i> Add Product</button></div><div style="overflow-x:auto;"><table class="user-table"><thead><tr><th>ID</th><th>Image</th><th>Product Name</th><th>Price</th><th>Stock</th><th>Category</th><th>Actions</th></tr></thead><tbody id="productsTableBody"><tr><td colspan="7" class="text-center">Loading products...</td></tr></tbody></table></div></div></div>
+
+            <!-- Orders Section with Order Management -->
+            <div id="ordersSection" style="display:none;"><div class="table-container"><div class="table-header"><h4><i class="bi bi-cart-check"></i> Orders Management</h4><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOrderModal"><i class="bi bi-plus"></i> Create Order</button></div><div style="overflow-x:auto;"><table class="user-table"><thead><tr><th>Order ID</th><th>Customer</th><th>Products</th><th>Total ($)</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead><tbody id="ordersTableBody"><tr><td colspan="7" class="text-center">Loading orders...</td></tr></tbody></table></div></div></div>
+        </div>
+    </div>
+    <div class="auto-refresh"><i class="bi bi-arrow-repeat"></i> Auto-refresh: <span id="refreshStatus">ON</span></div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade modal-custom" id="addProductModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-light"><h5 class="modal-title"><i class="bi bi-plus-circle"></i> Add New Product</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="addProductForm"><div class="mb-3"><label class="form-label">Product Name *</label><input type="text" class="form-control" id="prodName" required></div><div class="mb-3"><label class="form-label">Price ($) *</label><input type="number" step="0.01" class="form-control" id="prodPrice" required></div><div class="mb-3"><label class="form-label">Category</label><input type="text" class="form-control" id="prodCategory" placeholder="Toys, Clothing, etc."></div><div class="mb-3"><label class="form-label">Stock Quantity</label><input type="number" class="form-control" id="prodStock" value="10"></div><div class="mb-3"><label class="form-label">Image URL</label><input type="text" class="form-control" id="prodImage" placeholder="https://via.placeholder.com/80"></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" id="confirmAddProductBtn">Add Product</button></div></div></div></div>
+
+    <!-- Add Order Modal (Order Management) -->
+    <div class="modal fade modal-custom" id="addOrderModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header bg-light"><h5 class="modal-title"><i class="bi bi-truck"></i> Create New Order</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><form id="addOrderForm"><div class="mb-3"><label class="form-label">Customer Name *</label><input type="text" class="form-control" id="orderCustomer" required></div><div class="mb-3"><label class="form-label">Customer Email</label><input type="email" class="form-control" id="orderEmail" placeholder="customer@example.com"></div><div class="mb-3"><label class="form-label">Product (Name / ID)</label><input type="text" class="form-control" id="orderProductDesc" placeholder="e.g., Wooden Toy Car"></div><div class="mb-3"><label class="form-label">Total Amount ($) *</label><input type="number" step="0.01" class="form-control" id="orderTotal" required></div><div class="mb-3"><label class="form-label">Status</label><select class="form-control" id="orderStatus"><option value="pending">Pending</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></div></form></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="button" class="btn btn-primary" id="confirmAddOrderBtn">Create Order</button></div></div></div></div>
+
+    <!-- Update Order Status Modal -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Update Order Status</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><select id="newOrderStatus" class="form-control"><option value="pending">Pending</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select><input type="hidden" id="updateOrderId"></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button><button type="button" class="btn btn-primary" id="saveStatusBtn">Save</button></div></div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ============================================
+        // REAL API INTEGRATION WITH BACKEND
+        // ============================================
+        const API_URL = 'http://localhost:3000'; // Your server URL (changed to 3000 as per your server.js)
+        let previousUserCount = 0;
+        let autoRefreshInterval = null;
+        let productsList = [];
+        let ordersList = [];
+
+        // ============================================
+        // PRODUCTS API FUNCTIONS
+        // ============================================
+        
+        // Fetch and render products from real API
+        async function renderProductsTable() {
+            const tbody = document.getElementById('productsTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center"><div class="spinner-border spinner-border-sm"></div> Loading...</td></tr>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/products`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.products) {
+                    productsList = data.products;
+                    if (productsList.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center">No products available. Add your first product!</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = productsList.map(prod => `
+                        <tr>
+                            <td><code>${prod._id || prod.id}</code></td>
+                            <td><img src="${prod.image || 'https://via.placeholder.com/40'}" width="40" height="40" style="object-fit:cover; border-radius:8px;" onerror="this.src='https://via.placeholder.com/40'"></td>
+                            <td><strong>${escapeHtml(prod.name)}</strong></td>
+                            <td>$${parseFloat(prod.price).toFixed(2)}</td>
+                            <td>${prod.stock ?? 0}</td>                                    <!-- Stock goes here -->
+                            <td>${escapeHtml(prod.category || 'General')}</td>             <!-- Category goes here -->
+                            <td>
+                                <button class="btn btn-sm btn-outline-pink" onclick="deleteProduct('${prod._id || prod.id}')">
+                                    <i class="bi bi-trash"></i> Delete
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    throw new Error(data.message || 'Failed to load products');
+                }
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error loading products. Make sure backend is running on ' + API_URL + '</td></tr>';
+            }
+        }
+
+        // Add new product via API
+        async function addNewProduct(productData) {
+            try {
+                const response = await fetch(`${API_URL}/api/products`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(productData)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    await renderProductsTable();
+                    showNotification(` ${data.message}`, 'success');
+                    updateStats();
+                    return true;
+                } else {
+                    throw new Error(data.message || 'Failed to add product');
+                }
+            } catch (error) {
+                showNotification('Error adding product: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Delete product via API
+        async function deleteProduct(productId) {
+            if (confirm('Remove this product?')) {
+                try {
+                    const response = await fetch(`${API_URL}/api/products/${productId}`, {
+                        method: 'DELETE',
+                        credentials: 'include'
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        await renderProductsTable();
+                        showNotification('Product removed successfully', 'success');
+                        updateStats();
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } catch (error) {
+                    showNotification('Error deleting product: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // ============================================
+        // ORDERS API FUNCTIONS
+        // ============================================
+        
+        // Fetch and render orders from real API
+        async function renderOrdersTable() {
+            const tbody = document.getElementById('ordersTableBody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center"><div class="spinner-border spinner-border-sm"></div> Loading...</td></tr>';
+            
+            try {
+                const response = await fetch(`${API_URL}/api/orders`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.orders) {
+                    ordersList = data.orders;
+                    if (ordersList.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="7" class="text-center">No orders found. Create new order.</td></tr>';
+                        return;
+                    }
+                    
+                    tbody.innerHTML = ordersList.map(order => {
+                        let statusClass = '';
+                        if (order.status === 'pending') statusClass = 'status-pending';
+                        else if (order.status === 'shipped') statusClass = 'status-shipped';
+                        else if (order.status === 'delivered') statusClass = 'status-delivered';
+                        else if (order.status === 'cancelled') statusClass = 'status-cancelled';
+                        
+                        return `
+                            <tr>
+                                <td><code>${order.orderId || order._id}</code></td>
+                                <td><strong>${escapeHtml(order.customer)}</strong><br><small class="text-muted">${escapeHtml(order.customerEmail || '')}</small></td>
+                                <td>${escapeHtml(order.products?.map(p => p.name).join(', ') || order.productSummary || '-')}</td>
+                                <td>$${parseFloat(order.total).toFixed(2)}</td>
+                                <td><span class="order-status ${statusClass}">${order.status.toUpperCase()}</span></td>
+                                <td>${new Date(order.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="openUpdateStatusModal('${order._id}', '${order.status}')">
+                                        <i class="bi bi-pencil"></i> Update Status
+                                    </button>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    throw new Error(data.message || 'Failed to load orders');
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-danger">Error loading orders. Make sure backend is running.</td></tr>';
+            }
+        }
+
+        // Create new order via API
+        async function createOrder(orderData) {
+            try {
+                const response = await fetch(`${API_URL}/api/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(orderData)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    await renderOrdersTable();
+                    showNotification(` ${data.message}`, 'success');
+                    updateStats();
+                    return true;
+                } else {
+                    throw new Error(data.message || 'Failed to create order');
+                }
+            } catch (error) {
+                showNotification('Error creating order: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        // Update order status via API
+        async function updateOrderStatus(orderId, newStatus) {
+            try {
+                const response = await fetch(`${API_URL}/api/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    await renderOrdersTable();
+                    showNotification(`Order status updated to ${newStatus.toUpperCase()}`, 'success');
+                    updateStats();
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                showNotification('Error updating status: ' + error.message, 'error');
+            }
+        }
+
+        // ============================================
+        // USERS API FUNCTIONS (Real data from backend)
+        // ============================================
+        
+        async function loadUsers(fullList = false) {
+            const tbody = document.getElementById(fullList ? 'usersTableBody' : 'recentUsersTable');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center"><div class="spinner-border spinner-border-sm"></div> Loading...</td></tr>';
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/api/users`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success && data.users) {
+                    const users = data.users;
+                    const currentCount = users.length;
+                    
+                    const userCountSpan = document.getElementById('userCount');
+                    if (userCountSpan) {
+                        userCountSpan.textContent = `${currentCount} user${currentCount !== 1 ? 's' : ''}`;
+                    }
+                    
+                    if (currentCount > previousUserCount && previousUserCount !== 0) {
+                        const newUsersCount = currentCount - previousUserCount;
+                        showNotification(`${newUsersCount} new user${newUsersCount !== 1 ? 's have' : ' has'} registered!`, 'success');
+                        const badge = document.getElementById('userBadge');
+                        if (badge) {
+                            badge.style.display = 'inline-block';
+                            setTimeout(() => { badge.style.display = 'none'; }, 5000);
+                        }
+                    }
+                    previousUserCount = currentCount;
+                    
+                    if (fullList) {
+                        if (users.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No users registered yet</td></tr>';
+                        } else {
+                            tbody.innerHTML = users.map((user, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td><strong>${escapeHtml(user.name)}</strong></td>
+                                    <td>${escapeHtml(user.email)}</td>
+                                    <td>${new Date(user.createdAt).toLocaleString()}</td>
+                                    <td><code style="font-size:11px;">${user._id}</code></td>
+                                </tr>
+                            `).join('');
+                        }
+                    } else {
+                        const recentUsers = users.slice(0, 5);
+                        if (recentUsers.length === 0) {
+                            tbody.innerHTML = '<tr><td colspan="4" class="text-center">No users registered yet</td></tr>';
+                        } else {
+                            tbody.innerHTML = recentUsers.map(user => `
+                                <tr>
+                                    <td><strong>${escapeHtml(user.name)}</strong></td>
+                                    <td>${escapeHtml(user.email)}</td>
+                                    <td>${new Date(user.createdAt).toLocaleString()}</td>
+                                    <td><code style="font-size:11px;">${user._id}</code></td>
+                                </tr>
+                            `).join('');
+                        }
+                    }
+                } else {
+                    throw new Error('Invalid response format');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                if (tbody) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center text-danger">
+                                <i class="bi bi-exclamation-triangle"></i> Error connecting to server<br>
+                                <small>Make sure backend is running on ${API_URL}</small>
+                                <br><br>
+                                <button class="btn btn-sm btn-primary" onclick="loadUsers(${fullList})">
+                                    <i class="bi bi-arrow-repeat"></i> Try Again
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+        }
+
+        // ============================================
+        // STATS API
+        // ============================================
+        
+        async function updateStats() {
+            try {
+                const response = await fetch(`${API_URL}/api/stats`, {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('statsGrid').innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>Total Users</h3>
+                                <div class="number">${data.users || 0}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>Registered Today</h3>
+                                <div class="number">${data.todayUsers || 0}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-graph-up"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>Total Products</h3>
+                                <div class="number">${data.products || 0}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-box"></i></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-info">
+                                <h3>Orders / Revenue</h3>
+                                <div class="number">${data.orders || 0} | $${(data.revenue || 0).toFixed(0)}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error updating stats:', error);
+            }
+        }
+
+        // ============================================
+        // HELPER FUNCTIONS
+        // ============================================
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+            notification.style.minWidth = '300px';
+            notification.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-triangle'} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            autoRefreshInterval = setInterval(() => {
+                loadUsers(false);
+                updateStats();
+                if (document.getElementById('productsSection').style.display !== 'none') {
+                    renderProductsTable();
+                }
+                if (document.getElementById('ordersSection').style.display !== 'none') {
+                    renderOrdersTable();
+                }
+            }, 15000);
+        }
+
+        function showSection(section) {
+            document.getElementById('dashboardSection').style.display = section === 'dashboard' ? 'block' : 'none';
+            document.getElementById('usersSection').style.display = section === 'users' ? 'block' : 'none';
+            document.getElementById('productsSection').style.display = section === 'products' ? 'block' : 'none';
+            document.getElementById('ordersSection').style.display = section === 'orders' ? 'block' : 'none';
+            
+            const titles = { dashboard: 'Dashboard', users: 'Registered Users', products: 'Products', orders: 'Orders' };
+            const descs = { 
+                dashboard: 'Overview of your store', 
+                users: 'Manage all registered users from your website', 
+                products: 'Manage your product inventory - Add, Edit, Delete products', 
+                orders: 'Track and manage customer orders - Update status, Create orders' 
+            };
+            
+            document.getElementById('sectionTitle').innerText = titles[section];
+            document.getElementById('sectionDesc').innerText = descs[section];
+            
+            if (section === 'users') loadUsers(true);
+            if (section === 'products') renderProductsTable();
+            if (section === 'orders') renderOrdersTable();
+        }
+
+        function showAdminInfo() {
+            alert('KidsMart Admin Dashboard\n\n✅ Connected to backend: ' + API_URL + '\n✅ Products API: POST /api/products\n✅ Orders API: POST /api/orders, PUT /api/orders/:id/status\n✅ Real-time sync with website\n\nProducts added here will appear on your website instantly!');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                fetch(`${API_URL}/api/logout`, { 
+                    method: 'POST', 
+                    credentials: 'include' 
+                }).catch(console.error);
+                window.location.href = '/';
+            }
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        
+        // Add Product Button
+        document.getElementById('confirmAddProductBtn')?.addEventListener('click', async () => {
+            const name = document.getElementById('prodName').value.trim();
+            const price = parseFloat(document.getElementById('prodPrice').value);
+            const category = document.getElementById('prodCategory').value.trim();
+            const stock = parseInt(document.getElementById('prodStock').value) || 0;
+            const image = document.getElementById('prodImage').value.trim() || 'https://via.placeholder.com/80?text=Product';
+            
+            if (!name || isNaN(price)) {
+                showNotification('Please fill product name and valid price', 'error');
+                return;
+            }
+            
+            const success = await addNewProduct({ name, price, category: category || 'Uncategorized', stock, image });
+            if (success) {
+                document.getElementById('addProductForm').reset();
+                bootstrap.Modal.getInstance(document.getElementById('addProductModal')).hide();
+            }
+        });
+
+        // Create Order Button
+        document.getElementById('confirmAddOrderBtn')?.addEventListener('click', async () => {
+            const customer = document.getElementById('orderCustomer').value.trim();
+            const email = document.getElementById('orderEmail').value.trim();
+            const total = parseFloat(document.getElementById('orderTotal').value);
+            const productDesc = document.getElementById('orderProductDesc').value.trim() || 'Custom item';
+            const status = document.getElementById('orderStatus').value;
+            
+            if (!customer || isNaN(total)) {
+                showNotification('Customer name and valid total required', 'error');
+                return;
+            }
+            
+            const success = await createOrder({ 
+                customer, 
+                customerEmail: email,
+                products: [{ name: productDesc, quantity: 1, price: total }],
+                total, 
+                status 
+            });
+            
+            if (success) {
+                document.getElementById('addOrderForm').reset();
+                bootstrap.Modal.getInstance(document.getElementById('addOrderModal')).hide();
+            }
+        });
+
+        // Update Status Save Button
+        document.getElementById('saveStatusBtn')?.addEventListener('click', () => {
+            const orderId = document.getElementById('updateOrderId').value;
+            const newStatus = document.getElementById('newOrderStatus').value;
+            if (orderId) {
+                updateOrderStatus(orderId, newStatus);
+                bootstrap.Modal.getInstance(document.getElementById('updateStatusModal')).hide();
+            }
+        });
+
+        // Modal helper
+        window.openUpdateStatusModal = (orderId, currentStatus) => {
+            document.getElementById('updateOrderId').value = orderId;
+            const select = document.getElementById('newOrderStatus');
+            select.value = currentStatus;
+            const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            modal.show();
+        };
+
+        // Menu navigation
+        document.querySelectorAll('.menu-item[data-section]').forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.getAttribute('data-section');
+                showSection(section);
+                document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        document.getElementById('logoutBtn')?.addEventListener('click', logout);
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        
+        startAutoRefresh();
+        loadUsers(false);
+        updateStats();
+        showSection('dashboard');
+        
+        setTimeout(() => {
+            showNotification('✅ Connected to backend at ' + API_URL + ' | Real API mode active!', 'success');
+        }, 1000);
+    </script>
+</body>
+</html>

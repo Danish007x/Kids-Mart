@@ -1,0 +1,74 @@
+
+<nav class="navbar navbar-expand-lg bg-light shadow-sm fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="/" style="font-family: 'Marcellus', serif; font-size: 28px;">
+      KIDS <span style="color: #f8b5c3;">MART</span>
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="/shop.html">Shop</a></li>
+        <li class="nav-item"><a class="nav-link" href="/about.html">About</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact.html">Contact</a></li>
+        <li class="nav-item"><a class="nav-link" href="/wishlist.html">♡ Wishlist</a></li>
+        <li class="nav-item" id="authLinks"><a class="nav-link" href="/login.html">Login</a></li>
+        <li class="nav-item ms-2">
+          <button class="btn btn-outline-secondary btn-sm position-relative"
+            data-bs-toggle="offcanvas" data-bs-target="#globalCartOffcanvas">
+            🛒 Cart <span class="cart-count">(0)</span>
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Global Cart Offcanvas -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="globalCartOffcanvas" style="width: 400px; max-width: 100%;">
+  <div class="offcanvas-header border-bottom" style="background: linear-gradient(135deg, #f8b5c3 0%, #9ec5cb 100%);">
+    <h5 class="offcanvas-title text-white" style="font-family: 'Marcellus', serif;">🛒 Your Cart</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column p-0">
+    <div id="globalCartItemsList" class="flex-grow-1 overflow-auto p-3">
+      <p class="text-muted text-center py-4">Your cart is empty</p>
+    </div>
+    <div id="globalCartFooter" class="border-top p-3" style="display: none !important;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="fw-bold" style="font-size: 16px;">Total:</span>
+        <span id="globalCartTotal" class="fw-bold" style="font-size: 18px; color: #f8b5c3;">Rs 0</span>
+      </div>
+      <div class="d-flex gap-2">
+        <button
+          class="btn btn-sm flex-grow-1"
+          style="border: 1px solid #dc3545; color: #dc3545; border-radius: 25px; font-size: 13px;"
+          onclick="KidsMart.clearCart()">
+          🗑 Clear Cart
+        </button>
+        <button
+          class="btn flex-grow-1"
+          style="background: linear-gradient(135deg, #f8b5c3, #f9a5b5); border: none; color: white; border-radius: 25px; font-weight: 600;"
+           class="btn ..." onclick="window.location.href='/checkout.html'" data-bs-dismiss="offcanvas">
+  Checkout →
+</button>
+      </div>
+      <button
+        class="btn btn-link w-100 mt-1 text-muted"
+        style="font-size: 13px; text-decoration: none;"
+        data-bs-dismiss="offcanvas"
+        onclick="window.location.href='/shop.html'">
+        Continue Shopping
+      </button>
+    </div>
+    <div id="globalCartEmptyFooter" class="border-top p-3">
+      <button class="w-100 btn" style="background: linear-gradient(135deg, #f8b5c3, #9ec5cb); border: none; color: white; border-radius: 25px;" onclick="window.location.href='/shop.html'" data-bs-dismiss="offcanvas">
+        Shop Now
+      </button>
+    </div>
+  </div>
+</div>
